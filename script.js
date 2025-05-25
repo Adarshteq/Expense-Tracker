@@ -80,18 +80,45 @@ function updateSummary() {
 function formatCurrency(number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "Rs",
+    currency: "INR",  // Changed from "Rs" to "INR"
+    minimumFractionDigits: 2
   }).format(number);
 }
 
 function removeTransaction(id) {
-  // filter out the one we wanted to delete
   transactions = transactions.filter((transaction) => transaction.id !== id);
-
-  localStorage.setItem("transcations", JSON.stringify(transactions));
-
+  localStorage.setItem("transactions", JSON.stringify(transactions)); // Fixed typo
   updateTransactionList();
   updateSummary();
+}
+
+// Update addTransaction function with validation
+function addTransaction(e) {
+  e.preventDefault();
+
+  const description = descriptionEl.value.trim();
+  const amount = parseFloat(amountEl.value);
+
+  // Validation
+  if (!description) {
+    alert("Please enter a description");
+    return;
+  }
+  if (isNaN(amount) || amount === 0) {
+    alert("Please enter a valid amount");
+    return;
+  }
+
+  transactions.push({
+    id: Date.now(),
+    description,
+    amount,
+  });
+
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+  updateTransactionList();
+  updateSummary();
+  transactionFormEl.reset();
 }
 
 // initial render
